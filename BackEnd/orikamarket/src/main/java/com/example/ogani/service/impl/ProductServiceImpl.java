@@ -39,11 +39,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product getProduct(long id) {
         // TODO Auto-generated method stub
-        Product product= productRepository.findById(id).orElseThrow(() -> new NotFoundException("Not Found Product With Id: " + id));
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Not Found Product With Id: " + id));
 
         return product;
     }
-    
 
     @Override
     public Product createProduct(CreateProductRequest request) {
@@ -53,12 +53,14 @@ public class ProductServiceImpl implements ProductService {
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
         product.setQuantity(request.getQuantity());
-        Category category = categoryRepository.findById(request.getCategoryId()).orElseThrow(()-> new NotFoundException("Not Found Category With Id: " + request.getCategoryId()));
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new NotFoundException("Not Found Category With Id: " + request.getCategoryId()));
         product.setCategory(category);
 
         Set<Image> images = new HashSet<>();
-        for(long imageId: request.getImageIds()){
-            Image image = imageRepository.findById(imageId).orElseThrow(() -> new NotFoundException("Not Found Image With Id: " + imageId));
+        for (long imageId : request.getImageIds()) {
+            Image image = imageRepository.findById(imageId)
+                    .orElseThrow(() -> new NotFoundException("Not Found Image With Id: " + imageId));
             images.add(image);
         }
         product.setImages(images);
@@ -68,18 +70,20 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product updateProduct(long id, CreateProductRequest request) {
-        // TODO Auto-generated method stub
-        Product product= productRepository.findById(id).orElseThrow(() -> new NotFoundException("Not Found Product With Id: " + id));
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Not Found Product With Id: " + id));
         product.setName(request.getName());
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
         product.setQuantity(request.getQuantity());
-        Category category = categoryRepository.findById(request.getCategoryId()).orElseThrow(()-> new NotFoundException("Not Found Category With Id: " + request.getCategoryId()));
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new NotFoundException("Not Found Category With Id: " + request.getCategoryId()));
         product.setCategory(category);
 
         Set<Image> images = new HashSet<>();
-        for(long imageId: request.getImageIds()){
-            Image image = imageRepository.findById(imageId).orElseThrow(() -> new NotFoundException("Not Found Image With Id: " + imageId));
+        for (long imageId : request.getImageIds()) {
+            Image image = imageRepository.findById(imageId)
+                    .orElseThrow(() -> new NotFoundException("Not Found Image With Id: " + imageId));
             images.add(image);
         }
         product.setImages(images);
@@ -91,7 +95,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void deleteProduct(long id) {
         // TODO Auto-generated method stub
-        Product product= productRepository.findById(id).orElseThrow(() -> new NotFoundException("Not Found Product With Id: " + id));
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Not Found Product With Id: " + id));
         product.getImages().remove(this);
         productRepository.delete(product);
     }
@@ -110,21 +115,21 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> findRelatedProduct(long id){
+    public List<Product> findRelatedProduct(long id) {
         List<Product> list = productRepository.findRelatedProduct(id);
         return list;
 
     }
 
     @Override
-    public List<Product> getListProductByCategory(long id){
-        List<Product> list =productRepository.getListProductByCategory(id);
+    public List<Product> getListProductByCategory(long id) {
+        List<Product> list = productRepository.getListProductByCategory(id);
         return list;
     }
 
     @Override
-    public List<Product> getListByPriceRange(long id,int min, int max){
-        List<Product> list =productRepository.getListProductByPriceRange(id, min, max);
+    public List<Product> getListByPriceRange(long id, int min, int max) {
+        List<Product> list = productRepository.getListProductByPriceRange(id, min, max);
         return list;
     }
 
@@ -135,6 +140,26 @@ public class ProductServiceImpl implements ProductService {
         return list;
     }
 
+    @Override
+    public void deleteProductImage(long productId, long imageId) {
+        // Truy vấn sản phẩm từ cơ sở dữ liệu
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new NotFoundException("Product not found with id: " + productId));
 
-    
+        // Lấy danh sách ảnh của sản phẩm
+        Set<Image> images = product.getImages();
+
+        // Tìm kiếm ảnh cần xóa trong danh sách ảnh của sản phẩm
+        Image imageToRemove = images.stream()
+                .filter(image -> image.getId() == imageId)
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Image not found with id: " + imageId));
+       
+        // Xóa ảnh khỏi danh sách ảnh của sản phẩm
+        images.remove(imageToRemove);
+
+        // Lưu lại sản phẩm được cập nhật vào cơ sở dữ liệu
+        productRepository.save(product);
+    }
+
 }

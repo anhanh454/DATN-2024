@@ -55,22 +55,23 @@
     </p-table>
 </div>
 
-<p-dialog [(visible)]="showForm" [style]="{width: '30vw'}" header="Product Details" [modal]="true" styleClass="p-fluid">
+<!-- Modal chi tiết sản phẩm -->
+<p-dialog [(visible)]="showForm" [style]="{width: '80vw'}" header="Chi tiết sản phẩm" [modal]="true" styleClass="p-fluid">
     <ng-template pTemplate="content">
         <!-- <img [src]="'assets/showcase/images/demo/product/' + product.image" [alt]="product.image" class="product-image" *ngIf="product.image"> -->
         <div class="field">
-            <label for="name">Name</label>
+            <label for="name">Tên</label>
             <input type="text" pInputText id="name" [(ngModel)]="productForm.name" required autofocus />
             <!-- <small class="p-error" *ngIf="submitted && !product.name">Name is required.</small> -->
         </div>
         <div class="field">
-            <label for="description">Description</label>
+            <label for="description">Thông tin sản phẩm</label>
             <textarea id="description" pInputTextarea [(ngModel)]="productForm.description" required rows="3" cols="20"></textarea>
         </div>
 
 
         <div class="field">
-            <label class="mb-3">Category</label>
+            <label class="mb-3">Danh mục</label>
             <div class="formgrid grid">
                 <div class="field-radiobutton col-6" *ngFor="let category of listCategory">
                         <p-radioButton name="category" value="{{category.id}}" [(ngModel)]="productForm.categoryId" [inputId]="category.id" class="mr-2"></p-radioButton>
@@ -82,18 +83,41 @@
         
         <div class="formgrid grid">
             <div class="field col">
-                <label for="price">Price</label>
-                <p-inputNumber id="price" [(ngModel)]="productForm.price" mode="currency" currency="USD" locale="en-US"></p-inputNumber>
+                <label for="price">Giá</label>
+                <p-inputNumber id="price" [(ngModel)]="productForm.price" mode="currency" currency="VND" locale="en-US"></p-inputNumber>
             </div>
             <div class="field col">
-                <label for="quantity">Quantity</label>
+                <label for="quantity">Tồn kho</label>
                 <p-inputNumber id="quantity" [(ngModel)]="productForm.quantity"></p-inputNumber>
             </div>
         </div>
 
         <div class="field">
             <button pButton type="button" class="p-button-success w-auto" (click)="onChooseImage()"> Chọn ảnh</button>
-            <p-dialog header="Chọn ảnh" [(visible)]="showImage" position="top" [modal]="true" [style]="{width: '40vw'}" [transitionOptions]="'.3s'">
+            <!-- Khung hiển thị list ảnh -->
+            <!-- <div class="grid mt-1" *ngIf="listImageChoosen != null">
+                <div class="product-image col-2 flex align-items-center" *ngFor="let image of listImageChoosen">
+                    <img src="{{'data:image/jpg;base64,' + image.data}}" alt="" class="w-full h-full">
+                    <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-text delete-image">X</button>
+                </div>
+            </div> -->
+            <div class="grid mt-1" *ngIf="listImageChoosen != null">
+                <div class="product-image col-2 flex align-items-center position-relative" *ngFor="let image of listImageChoosen">
+                    <img src="{{'data:image/jpg;base64,' + image.data}}" alt="" class="w-full h-full">
+                    <button pButton type="button" icon="pi pi-times" styleClass="p-button-rounded p-button-danger delete-image position-absolute-top" (click)="deleteImage(image)">
+                        <span class="p-badge p-badge-danger">X</span>
+                    </button>
+                </div>
+            </div>
+            
+            
+            
+            
+            
+            
+
+            <!-- Modal chọn ảnh để thêm vào list -->
+            <p-dialog header="Chọn ảnh" [(visible)]="showImage" position="top" [modal]="true" [style]="{width: '100vw'}" [transitionOptions]="'.3s'">
                 <div class="flex justify-content-between">
                     <div>
                         <input type="file" #file (change)="uploadFile($event)" hidden>
@@ -114,12 +138,7 @@
                 </div>
 
             </p-dialog>
-            <div class="grid mt-1" *ngIf="listImageChoosen != null">
-                <div class="product-image col-2 flex align-items-center" *ngFor="let image of listImageChoosen">
-                    <img src="{{'data:image/jpg;base64,' + image.data}}" alt="" class="w-full h-full">
-                    <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-text delete-image"></button>
-                </div>
-            </div>
+            
         </div>
 
     </ng-template>

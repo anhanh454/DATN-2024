@@ -57,6 +57,8 @@ export class ProductService {
   }
 
   updateProduct(id: number,name:string,description: string,price: string,quantity:number,categoryId: number,imageIds: Array<string>):Observable<any>{
+    console.log("List ảnh: " + imageIds);
+    
     return this.http.put(PRODUCT_API + 'update/'+id,{name,description,price,quantity,categoryId,imageIds},httpOptions);
   }
 
@@ -64,5 +66,10 @@ export class ProductService {
     return this.http.delete(PRODUCT_API + 'delete/' + id,httpOptions);
   }
 
+  deleteProductImage(productId: number, imageId: number): Observable<any> {
+    console.log("Chay vào");
+    
+    return this.http.delete(`${PRODUCT_API}${productId}/image/${imageId}`, httpOptions);
+  }
 
 }
