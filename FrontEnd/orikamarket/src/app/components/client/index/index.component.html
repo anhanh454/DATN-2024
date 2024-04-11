@@ -112,14 +112,14 @@
                                             </div>
                                             <div class="cart-box-text">
                                                 <a href="javascript:void(0)">{{product.name}}</a>
-                                                <div><span>{{product.quantity}} x </span>{{product.price | currency}}</div>
+                                                <div><span>{{product.quantity}} x </span>{{product.price  | currency:'VND':'symbol-narrow'}} </div>
                                             </div>
                                             <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-text" (click)="removeFromCart(product)"></button>
                                         </li>
                                     </ul>
                                     <p-divider></p-divider>
                                     <div class="text-center">
-                                        <strong>Tổng: </strong><span class="ml-2">{{cartService.getTotalPrice() | currency}}</span>
+                                        <strong>Tổng: </strong><span class="ml-2">{{cartService.getTotalPrice() | currency:'VND':'symbol-narrow'}}</span>
                                     </div>
                                     <p-divider></p-divider>
                                     <div class="cart-button">
@@ -135,16 +135,16 @@
                                 <div >
                                     <a class="dropdown-item" href="javascript:void(0)" routerLink="/user" >
                                         <fa-icon [icon]="userIcon"></fa-icon>   
-                                        Profile
+                                        Thông tin
                                     </a>
                                     <a class="dropdown-item" href="javascript:void(0)" routerLink="my-order">
                                         <fa-icon [icon]="bag"></fa-icon>   
-                                        My Orders
+                                        Đơn hàng của tôi
                                     </a>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" (click)="logout();profile.toggle($event)" >
                                         <fa-icon [icon]="logoutIcon"></fa-icon>
-                                        Logout
+                                        Đăng xuất
                                     </a>
                                 </div>
                             </p-overlayPanel>
@@ -192,7 +192,7 @@
                         </div>
                         <div class="hero__search__phone__text">
                             <h5>+65 11.188.888</h5>
-                            <span>support 24/7 time</span>
+                            <span>Hỗ trợ 24/7 time</span>
                         </div>
                     </div>
                 </div>

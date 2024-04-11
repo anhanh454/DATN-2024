@@ -154,11 +154,23 @@ public class ProductServiceImpl implements ProductService {
                 .filter(image -> image.getId() == imageId)
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("Image not found with id: " + imageId));
-       
+
         // Xóa ảnh khỏi danh sách ảnh của sản phẩm
         images.remove(imageToRemove);
 
         // Lưu lại sản phẩm được cập nhật vào cơ sở dữ liệu
+        productRepository.save(product);
+    }
+
+    @Override
+    public void updateProductImages(long productId, List<Long> imageIds) {
+        // Lấy sản phẩm từ cơ sở dữ liệu
+        Product product = getProduct(productId);
+
+        // Cập nhật danh sách hình ảnh cho sản phẩm
+        product.setImageIds(imageIds);
+
+        // Lưu sản phẩm đã cập nhật vào cơ sở dữ liệu
         productRepository.save(product);
     }
 

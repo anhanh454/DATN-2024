@@ -24,6 +24,11 @@ export class ProductComponent implements OnInit {
   listImageChoosen: any = [];
   imageChoosen: any;
 
+  selectedImageId: number | null = null;
+  confirmDialog: boolean = false;
+  displayConfirmation: boolean = false;
+
+
   onUpdate: boolean = false;
   showForm: boolean = false;
   showImage: boolean = false;
@@ -38,9 +43,9 @@ export class ProductComponent implements OnInit {
     imageIds: []
   };
 
-  constructor(private messageService: MessageService, private productService: ProductService, private imageService: ImageService, private categoryService: CategoryService) {
-
+  constructor(private messageService: MessageService, private productService: ProductService, private imageService: ImageService, private categoryService: CategoryService, private confirmationService: ConfirmationService) {
   }
+
 
   ngOnInit(): void {
     this.getListProduct();
@@ -199,20 +204,69 @@ export class ProductComponent implements OnInit {
   }
 
   chooseImage() {
+    // Thêm hình ảnh đã chọn vào danh sách hình ảnh đã chọn
     this.listImageChoosen.push(this.imageChoosen);
-    console.log(this.listImageChoosen);
-    this.showImage = false;
+
+    // Hiển thị dialog xác nhận trước khi cập nhật hình ảnh
+    this.confirmationService.confirm({
+      message: 'Bạn có chắc chắn muốn cập nhật hình ảnh?',
+      header: 'Xác nhận',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        // Gửi danh sách hình ảnh đã chọn mới lên server để cập nhật thông tin sản phẩm
+        const imageIds = this.listImageChoosen.map((image: any) => image.id);
+        const { id, name, description, price, quantity, categoryId } = this.productForm;
+        this.productService.updateProductImage(id, imageIds).subscribe({
+          next: res => {
+            // Nếu cập nhật thành công, cập nhật lại danh sách sản phẩm
+            this.getListProduct();
+            this.showForm = false;
+            this.showSuccess("Cập nhật hình ảnh thành công");
+          },
+          error: err => {
+            // Nếu có lỗi, hiển thị thông báo lỗi
+            this.showError(err.message);
+          }
+        });
+
+        // Sau khi cập nhật, ẩn cửa sổ chọn hình ảnh
+        this.showImage = false;
+      },
+      reject: () => {
+        // Nếu người dùng hủy bỏ xác nhận, không thực hiện hành động nào
+      }
+    });
   }
 
-  selectImage(event: any, res: any) {
+
+  // Hàm này được gọi khi người dùng xác nhận cập nhật hình ảnh
+  confirmUpdate() {
+    // Gọi hàm cập nhật hình ảnh tại đây
+    this.updateImage(); // Đây là một ví dụ, bạn cần thay đổi nội dung hàm này để phù hợp với logic của bạn
+
+    // Sau khi cập nhật, đóng dialog xác nhận
+    this.confirmDialog = false;
+  }
+
+
+  selectImage(event: any, image: any) {
     let data = document.querySelectorAll('.list-image img');
     data.forEach(i => {
       i.classList.remove('choosen');
     })
     event.target.classList.toggle("choosen");
-    this.imageChoosen = res;
+    this.imageChoosen = image;
     this.disabled = false;
+
+    // Đánh dấu hình ảnh được chọn
+    image.selected = !image.selected;
   }
+
+  // Hàm kiểm tra xem hình ảnh có được chọn hay không
+  isImageSelected(image: any): boolean {
+    return image.selected;
+  }
+
 
   showSuccess(text: string) {
     this.messageService.add({ severity: 'success', summary: 'Success', detail: text });
@@ -242,4 +296,42 @@ export class ProductComponent implements OnInit {
       }
     });
   }
+
+  updateImage() {
+    // Lấy danh sách ID của các hình ảnh đã chọn
+    const imageIds = this.listImageChoosen.map((image: any) => image.id);
+
+    // Lấy thông tin sản phẩm cần cập nhật
+    const { id, name, description, price, quantity, categoryId } = this.productForm;
+
+    // Gọi phương thức cập nhật hình ảnh từ ProductService
+    this.productService.updateProductImage(id, imageIds).subscribe({
+      next: res => {
+        // Nếu cập nhật thành công, cập nhật lại danh sách sản phẩm
+        this.getListProduct();
+        this.showForm = false;
+        this.showSuccess("Cập nhật hình ảnh thành công");
+      },
+      error: err => {
+        // Nếu có lỗi, hiển thị thông báo lỗi
+        this.showError(err.message);
+      }
+    });
+  }
+
+  cancelSelection() {
+    // Xóa lựa chọn hình ảnh và ẩn cửa sổ chọn ảnh
+    this.imageChoosen = null;
+    this.showImage = false;
+  }
+
+  confirmSelection() {
+    // Thêm hình ảnh đã chọn vào danh sách hình ảnh đã chọn
+    this.listImageChoosen.push(this.imageChoosen);
+
+    // Hiển thị dialog xác nhận trước khi cập nhật hình ảnh
+    this.confirmDialog = true;
+  }
+
+
 }

@@ -128,4 +128,14 @@ public class ProductController {
                     .body("Error occurred while deleting image: " + e.getMessage());
         }
     }
+
+    @PutMapping("/{productId}/images")
+    public ResponseEntity<?> updateProductImages(@PathVariable Long productId, @RequestBody List<Long> imageIds) {
+        try {
+            productService.updateProductImages(productId, imageIds);
+            return ResponseEntity.ok(new MessageResponse("Đã cập nhật ảnh sản phẩm!"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update product images: " + e.getMessage());
+        }
+    }
 }

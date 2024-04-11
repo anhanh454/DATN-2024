@@ -101,7 +101,8 @@ import { FooterComponent } from './components/client/footer/footer.component';
     PasswordModule,
     SliderModule,
     DataViewModule,
-    MultiSelectModule
+    MultiSelectModule,
+    ButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent]
