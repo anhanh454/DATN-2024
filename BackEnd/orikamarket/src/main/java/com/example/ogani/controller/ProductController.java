@@ -67,6 +67,7 @@ public class ProductController {
     @GetMapping("/category/{id}")
     @Operation(summary = "Lấy ra danh sách sản phẩm bằng id của danh mục")
     public ResponseEntity<List<Product>> getListProductByCategory(@PathVariable long id) {
+        System.out.println("aloooooooooooooooooooooooo");
         List<Product> list = productService.getListProductByCategory(id);
         return ResponseEntity.ok(list);
     }

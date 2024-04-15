@@ -14,6 +14,7 @@ export class ProductService {
 
   constructor(private http:HttpClient) { }
   
+  //  Lấy tất cả sản phẩm
   getListProduct():Observable<any>{
     return this.http.get(PRODUCT_API,httpOptions);
   }

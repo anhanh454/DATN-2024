@@ -1,6 +1,7 @@
 
 <p-toast></p-toast>
 
+<!-- Phần đăng nhập -->
 <p-dialog [(visible)]="authModal" [style]="{width: '30vw'}"  [baseZIndex]="10000" [modal]="true" [dismissableMask]="true">
     <p-tabView>
         <p-tabPanel header="Đăng nhập">
@@ -39,7 +40,7 @@
 </p-dialog>
 
 
-
+<!-- Phần header -->
 <header class="header">
     <div class="header__top">
         <div class="container">
@@ -47,7 +48,7 @@
                 <div class="col-lg-6 col-md-6">
                     <div class="header__top__left">
                         <ul>
-                            <li><i class="fa fa-envelope"></i> lananh@gmail.com</li>
+                            <li><i class="fa fa-envelope"></i> phanlananh454&#64;gmail.com</li>
                             <li>Freeship toàn bộ đơn hàng trị giá hơn 2.000.000 VND</li>
                         </ul>
                     </div>
@@ -60,23 +61,22 @@
         <div class="row">
             <div class="col-lg-3">
                 <div class="header__logo">
-                    <a href="javascript:void(0)" routerLink="/" ><img src="assets/image/logo.png" alt=""></a>
+                    <a href="javascript:void(0)" routerLink="/" ><img src="assets/image/logo.jpg" alt=""></a>
                 </div>
             </div>
             <div class="col-lg-6">
                 <nav class="header__menu">
                     <ul>
-                        <li class="active"><a href="javascript:void(0)">Trang chủ</a></li>
-                        <li><a href="javascript:void(0)" routerLink="/">Sản phẩm</a></li>
-                        <li><a href="javascript:void(0)">Cửa hàng</a>
-                            <ul class="header__menu__dropdown">
+                        <li [class.active]="navService.activeItem === 'home'"><a href="javascript:void(0)" routerLink="/" (click)="navService.activeItem = 'home'">Trang chủ</a></li>
+                        <li [class.active]="navService.activeItem === 'shop'"><a href="javascript:void(0)" routerLink="/shop" (click)="navService.activeItem = 'shop'">Cửa hàng</a>
+                             <!-- <ul class="header__menu__dropdown">
                                 <li><a href="javascript:void(0)">Chi tiết</a></li>
                                 <li><a href="javascript:void(0)">Giỏ hàng</a></li>
                                 <li><a href="javascript:void(0)">Thanh toán</a></li>
-                            </ul>
+                            </ul> -->
                         </li>
-                        <li><a href="javascript:void(0)" routerLink="/blog">Blog</a></li>
-                        <li><a href="javascript:void(0)" routerLink="/contact">Liên hệ</a></li>
+                        <li [class.active]="navService.activeItem === 'blog'"><a href="javascript:void(0)" routerLink="/blog" (click)="navService.activeItem = 'blog'">Blog</a></li>
+                        <li [class.active]="navService.activeItem === 'contact'"><a href="javascript:void(0)" routerLink="/contact" (click)="navService.activeItem = 'contact'">Liên hệ</a></li>
                     </ul>
                 </nav>
             </div>
@@ -123,7 +123,7 @@
                                     </div>
                                     <p-divider></p-divider>
                                     <div class="cart-button">
-                                        <button pButton pRipple label="GO TO CART" class="w-full p-button-warning" routerLink="cart"></button>
+                                        <button pButton pRipple label="Thanh toán" class="w-full p-button-warning" routerLink="cart"></button>
                                     </div>   
                                 </div>
                             </ng-template>
@@ -149,8 +149,6 @@
                                 </div>
                             </p-overlayPanel>
                         </li>
-                        
-
                     </ul>
                 </div>
             </div>
@@ -160,6 +158,8 @@
         </div>
     </div>
 </header>
+
+
 <section class="hero">
     <div class="container">
         <div class="row">

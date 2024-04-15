@@ -37,6 +37,7 @@ const routes: Routes = [
     path:'',component: IndexComponent,
     children:[
       {path:'',component:HomeComponent},
+      {path:'shop',component:ShopComponent},
       {path:'cart',component: CartComponent},
       {path:'checkout',component: CheckoutComponent,canActivate: [AuthGuardService]},
       {path:'category/:id',component: ShopComponent},

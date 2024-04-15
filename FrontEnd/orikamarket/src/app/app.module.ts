@@ -71,7 +71,7 @@ import { FooterComponent } from './components/client/footer/footer.component';
     MyOrderComponent,
     SearchComponent,
     LoginPageComponent,
-    FooterComponent
+    FooterComponent,
 
   ],
   imports: [

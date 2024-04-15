@@ -7,6 +7,7 @@ import { MessageService } from 'primeng/api';
 import { AuthService } from 'src/app/_service/auth.service';
 import { CartService } from 'src/app/_service/cart.service';
 import { CategoryService } from 'src/app/_service/category.service';
+import { NavbarService } from 'src/app/_service/navbar.service';
 import { StorageService } from 'src/app/_service/storage.service';
 import { WishlistService } from 'src/app/_service/wishlist.service';
 
@@ -63,6 +64,7 @@ export class IndexComponent implements OnInit {
     private storageService: StorageService,
     private messageService:MessageService,
     private categoryService: CategoryService,
+    public navService: NavbarService,
     private router: Router){
 
   }

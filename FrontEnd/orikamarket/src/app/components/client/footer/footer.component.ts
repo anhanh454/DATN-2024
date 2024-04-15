@@ -14,8 +14,6 @@ export class FooterComponent implements OnInit {
     'Chính sách bảo mật',
     'Dịch vụ',
     'Liên hệ',
-    'Innovation',
-    'Testimonials'
   ];
   newsletterTitle: string = 'Tham gia cùng chúng tôi';
   newsletterDescription: string = 'Thông báo về thông tin khuyến mãi và mặt hàng mới';

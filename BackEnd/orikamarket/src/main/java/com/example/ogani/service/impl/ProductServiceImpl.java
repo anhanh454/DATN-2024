@@ -124,6 +124,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> getListProductByCategory(long id) {
         List<Product> list = productRepository.getListProductByCategory(id);
+        System.out.println("sizeHaha." + list.size());
+        for (Product p : list) {
+            System.out.println(p.getName());
+        }
+
         return list;
     }
 

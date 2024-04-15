@@ -22,24 +22,24 @@ export class CheckoutComponent implements OnInit {
   bars = faBars;
   showDepartment = false;
   order = new Order();
-  listOrderDetail: any[] =[];
+  listOrderDetail: any[] = [];
   username !: string;
 
-  orderForm :any ={
+  orderForm: any = {
     firstname: null,
-    lastname : null,
-    country : null,
-    addrest : null,
-    town : null,
-    state : null,
+    lastname: null,
+    country: null,
+    addrest: null,
+    town: null,
+    state: null,
     postCode: null,
     email: null,
     phone: null,
     note: null
   }
 
-  constructor(public cartService: CartService,private orderService:OrderService,private storageService: StorageService){
-    
+  constructor(public cartService: CartService, private orderService: OrderService, private storageService: StorageService, private messageService: MessageService) {
+
   }
   ngOnInit(): void {
     this.username = this.storageService.getUser().username;
@@ -47,13 +47,13 @@ export class CheckoutComponent implements OnInit {
     console.log(this.username);
   }
 
-  showDepartmentClick(){
+  showDepartmentClick() {
     this.showDepartment = !this.showDepartment;
   }
 
-  placeOrder(){
-    this.cartService.items.forEach(res =>{
-      let orderDetail : OrderDetail = new OrderDetail;
+  placeOrder() {
+    this.cartService.items.forEach(res => {
+      let orderDetail: OrderDetail = new OrderDetail;
       orderDetail.name = res.name;
       orderDetail.price = res.price;
       orderDetail.quantity = res.quantity;
@@ -61,15 +61,32 @@ export class CheckoutComponent implements OnInit {
       this.listOrderDetail.push(orderDetail);
     })
 
-    const {firstname,lastname,country,address,town,state,postCcode,phone,email,note} = this.orderForm;
-    this.orderService.placeOrder(firstname,lastname,country,address,town,state,postCcode,phone,email,note,this.listOrderDetail,this.username).subscribe({
-      next: res =>{
+    const { firstname, lastname, country, address, town, state, postCcode, phone, email, note } = this.orderForm;
+
+
+    // Clear gio hang
+    this.orderService.placeOrder(firstname, lastname, country, address, town, state, postCcode, phone, email, note, this.listOrderDetail, this.username).subscribe({
+      next: res => {
         this.cartService.clearCart();
-      },error: err=>{
+        this.showSuccess("Thanh toán thành công!");
+      }, error: err => {
         console.log(err);
+        this.showError("Có lỗi xảy ra!");
       }
     })
 
+  }
+
+  showSuccess(text: string) {
+    this.messageService.add({severity:'success', summary: 'Thành công', detail: text});
+  }
+
+  showError(text: string) {
+    this.messageService.add({severity:'error', summary: 'Thất bại', detail: text});
+  }
+  
+  showWarn(text: string) {
+    this.messageService.add({severity:'warn', summary: 'Warn', detail: text});
   }
 
 
