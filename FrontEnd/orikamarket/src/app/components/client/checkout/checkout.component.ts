@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { faBars, faHeart, faPhone, faShoppingBag } from '@fortawesome/free-solid-svg-icons';
 import { MessageService } from 'primeng/api';
 import { Order } from 'src/app/_class/order';
@@ -24,6 +24,11 @@ export class CheckoutComponent implements OnInit {
   order = new Order();
   listOrderDetail: any[] = [];
   username !: string;
+  invalidForm: boolean = false;
+
+  // Trường dữ liệu để lưu trạng thái của phương thức thanh toán đã chọn
+  selectedPaymentMethod: string = '';
+
 
   orderForm: any = {
     firstname: null,
@@ -42,6 +47,7 @@ export class CheckoutComponent implements OnInit {
 
   }
   ngOnInit(): void {
+    this.selectedPaymentMethod = 'cash'; // Mặc định chọn tiền mặt
     this.username = this.storageService.getUser().username;
     this.cartService.getItems();
     console.log(this.username);
@@ -51,7 +57,22 @@ export class CheckoutComponent implements OnInit {
     this.showDepartment = !this.showDepartment;
   }
 
+  togglePaymentMethod(method: string) {
+    // Kiểm tra xem phương thức thanh toán nào được chọn
+    if (this.selectedPaymentMethod != '') {
+      // Nếu đã chọn rồi thì gán giá trị của selectedPaymentMethod về null
+      this.selectedPaymentMethod = method;
+      console.log(this.selectedPaymentMethod);
+    } 
+  }
+
   placeOrder() {
+    if (!this.orderForm.lastname || !this.orderForm.firstname || !this.orderForm.country || !this.orderForm.address || !this.orderForm.town || !this.orderForm.state || !this.orderForm.postCode || !this.orderForm.phone || !this.orderForm.email || !this.orderForm.note) {
+      this.invalidForm = true; // Đánh dấu form là không hợp lệ
+      this.showWarn("Vui lòng nhập đầy đủ thông tin giao hàng!");
+      return; // Dừng hàm nếu form không hợp lệ
+    }
+
     this.cartService.items.forEach(res => {
       let orderDetail: OrderDetail = new OrderDetail;
       orderDetail.name = res.name;
@@ -78,15 +99,15 @@ export class CheckoutComponent implements OnInit {
   }
 
   showSuccess(text: string) {
-    this.messageService.add({severity:'success', summary: 'Thành công', detail: text});
+    this.messageService.add({ severity: 'success', summary: 'Thành công', detail: text });
   }
 
   showError(text: string) {
-    this.messageService.add({severity:'error', summary: 'Thất bại', detail: text});
+    this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: text });
   }
-  
+
   showWarn(text: string) {
-    this.messageService.add({severity:'warn', summary: 'Warn', detail: text});
+    this.messageService.add({ severity: 'warn', summary: 'Cảnh báo', detail: text });
   }
 
 
