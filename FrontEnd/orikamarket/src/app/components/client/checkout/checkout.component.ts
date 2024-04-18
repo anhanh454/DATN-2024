@@ -63,38 +63,48 @@ export class CheckoutComponent implements OnInit {
       // Nếu đã chọn rồi thì gán giá trị của selectedPaymentMethod về null
       this.selectedPaymentMethod = method;
       console.log(this.selectedPaymentMethod);
-    } 
+    }
   }
 
   placeOrder() {
-    if (!this.orderForm.lastname || !this.orderForm.firstname || !this.orderForm.country || !this.orderForm.address || !this.orderForm.town || !this.orderForm.state || !this.orderForm.postCode || !this.orderForm.phone || !this.orderForm.email || !this.orderForm.note) {
+    // Kiểm tra trường hợp null
+    if (!this.orderForm.lastname || !this.orderForm.firstname || !this.orderForm.country || !this.orderForm.address || !this.orderForm.town || !this.orderForm.state || !this.orderForm.postCode || !this.orderForm.phone || !this.orderForm.email) {
       this.invalidForm = true; // Đánh dấu form là không hợp lệ
       this.showWarn("Vui lòng nhập đầy đủ thông tin giao hàng!");
       return; // Dừng hàm nếu form không hợp lệ
     }
 
-    this.cartService.items.forEach(res => {
-      let orderDetail: OrderDetail = new OrderDetail;
-      orderDetail.name = res.name;
-      orderDetail.price = res.price;
-      orderDetail.quantity = res.quantity;
-      orderDetail.subTotal = res.subTotal;
-      this.listOrderDetail.push(orderDetail);
-    })
+    switch (this.selectedPaymentMethod) {
+      case 'cash':
+        this.cartService.items.forEach(res => {
+          let orderDetail: OrderDetail = new OrderDetail;
+          orderDetail.name = res.name;
+          orderDetail.price = res.price;
+          orderDetail.quantity = res.quantity;
+          orderDetail.subTotal = res.subTotal;
+          this.listOrderDetail.push(orderDetail);
+        })
 
-    const { firstname, lastname, country, address, town, state, postCcode, phone, email, note } = this.orderForm;
+        const { firstname, lastname, country, address, town, state, postCcode, phone, email, note } = this.orderForm;
 
 
-    // Clear gio hang
-    this.orderService.placeOrder(firstname, lastname, country, address, town, state, postCcode, phone, email, note, this.listOrderDetail, this.username).subscribe({
-      next: res => {
-        this.cartService.clearCart();
-        this.showSuccess("Thanh toán thành công!");
-      }, error: err => {
-        console.log(err);
-        this.showError("Có lỗi xảy ra!");
-      }
-    })
+        // Clear gio hang
+        this.orderService.placeOrder(firstname, lastname, country, address, town, state, postCcode, phone, email, note, this.listOrderDetail, this.username).subscribe({
+          next: res => {
+            this.cartService.clearCart();
+            this.showSuccess("Thanh toán thành công!");
+          }, error: err => {
+            console.log(err);
+            this.showError("Có lỗi xảy ra!");
+          }
+        })
+        break;
+        case 'banking':
+          console.log("Thanh toán qua banking!");
+          break;
+    }
+
+
 
   }
 
