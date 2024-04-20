@@ -16,11 +16,9 @@ const httpOptions = {
 export class OrderService {
   constructor(private http: HttpClient) { }
 
-
   getListOrder(): Observable<any> {
     return this.http.get(ORDER_API, httpOptions);
   }
-
 
   getListOrderByUser(username: string): Observable<any> {
     let params = new HttpParams();
@@ -29,7 +27,11 @@ export class OrderService {
 
   }
 
-  placeOrder(firstname: string, lastname: string, country: string, address: string, town: string, state: string, postCode: string, phone: string, email: string, note: string, orderDetails: OrderDetail[], username: string): Observable<any> {
+  placeOrderByCash(firstname: string, lastname: string, country: string, address: string, town: string, state: string, postCode: string, phone: string, email: string, note: string, orderDetails: OrderDetail[], username: string): Observable<any> {
     return this.http.post(ORDER_API + 'create', { firstname, lastname, country, address, town, state, postCode, phone, email, note, orderDetails, username }, httpOptions);
+  }
+
+  placeOrderInternetBanking(){
+    
   }
 }

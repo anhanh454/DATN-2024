@@ -1,5 +1,7 @@
 package com.example.ogani.service.impl;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +14,15 @@ import com.example.ogani.entity.User;
 import com.example.ogani.exception.NotFoundException;
 import com.example.ogani.model.request.CreateOrderDetailRequest;
 import com.example.ogani.model.request.CreateOrderRequest;
+import com.example.ogani.model.request.CreatePaymentLinkRequestBody;
 import com.example.ogani.repository.OrderDetailRepository;
 import com.example.ogani.repository.OrderRepository;
 import com.example.ogani.repository.UserRepository;
 import com.example.ogani.service.OrderService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.lib.payos.PayOS;
+import com.lib.payos.type.ItemData;
+import com.lib.payos.type.PaymentData;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -29,9 +36,11 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PayOS payOS;
+
     @Override
     public void placeOrder(CreateOrderRequest request) {
-        // TODO Auto-generated method stub
         Order order = new Order();
         User user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new NotFoundException("Not Found User With Username:" + request.getUsername()));
         order.setFirstname(request.getFirstname());
@@ -74,5 +83,37 @@ public class OrderServiceImpl implements OrderService {
         List<Order> orders = orderRepository.getOrderByUser(user.getId());
         return orders;  
     }
+
+    @Override
+    public void placeOrderPayos(CreatePaymentLinkRequestBody request) {
+        try {
+            final String productName = request.getProductName();
+            final String description = request.getDescription();
+            final String returnUrl = request.getReturnUrl();
+            final String cancelUrl = request.getCancelUrl();
+            final int price = request.getPrice();
+
+            // Generate order code
+            String currentTimeString = String.valueOf(new Date().getTime());
+            int orderCode = Integer.parseInt(currentTimeString.substring(currentTimeString.length() - 6));
+
+            // Construct payment data
+            ItemData item = new ItemData("Mì tôm hảo hảo Ly", 1, 1000);
+            List<ItemData> itemList = new ArrayList<ItemData>();
+            itemList.add(item);
+
+            PaymentData paymentData = new PaymentData(orderCode, price, description, itemList, cancelUrl, returnUrl);
+
+            // Create payment link using PayOS
+            JsonNode data = payOS.createPaymentLink(paymentData);
+
+            // You can log success or do any additional actions here
+        } catch (Exception e) {
+            e.printStackTrace();
+            // You can log the exception or handle it in any appropriate way
+        }
+    }
+
+    
 
 }

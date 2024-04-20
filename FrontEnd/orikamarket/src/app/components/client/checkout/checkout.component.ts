@@ -74,37 +74,42 @@ export class CheckoutComponent implements OnInit {
       return; // Dừng hàm nếu form không hợp lệ
     }
 
+    //  Người dùng sẽ trả tiền mặt hoặc là thanh toán bằng internet banking
     switch (this.selectedPaymentMethod) {
       case 'cash':
-        this.cartService.items.forEach(res => {
-          let orderDetail: OrderDetail = new OrderDetail;
-          orderDetail.name = res.name;
-          orderDetail.price = res.price;
-          orderDetail.quantity = res.quantity;
-          orderDetail.subTotal = res.subTotal;
-          this.listOrderDetail.push(orderDetail);
-        })
-
-        const { firstname, lastname, country, address, town, state, postCcode, phone, email, note } = this.orderForm;
-
-
-        // Clear gio hang
-        this.orderService.placeOrder(firstname, lastname, country, address, town, state, postCcode, phone, email, note, this.listOrderDetail, this.username).subscribe({
-          next: res => {
-            this.cartService.clearCart();
-            this.showSuccess("Thanh toán thành công!");
-          }, error: err => {
-            console.log(err);
-            this.showError("Có lỗi xảy ra!");
-          }
-        })
+        this.placeOrderByCash();
         break;
-        case 'banking':
-          console.log("Thanh toán qua banking!");
-          break;
+      case 'banking':
+        this.placeOrderPayOs();
+        break;
     }
+  }
 
+  placeOrderByCash() {
+    this.cartService.items.forEach(res => {
+      let orderDetail: OrderDetail = new OrderDetail;
+      orderDetail.name = res.name;
+      orderDetail.price = res.price;
+      orderDetail.quantity = res.quantity;
+      orderDetail.subTotal = res.subTotal;
+      this.listOrderDetail.push(orderDetail);
+    })
 
+    const { firstname, lastname, country, address, town, state, postCcode, phone, email, note } = this.orderForm;
+
+    this.orderService.placeOrderByCash(firstname, lastname, country, address, town, state, postCcode, phone, email, note, this.listOrderDetail, this.username).subscribe({
+      next: res => {
+        //  Clear giỏ hàng
+        this.cartService.clearCart();
+        this.showSuccess("Thanh toán thành công!");
+      }, error: err => {
+        console.log(err);
+        this.showError("Có lỗi xảy ra!");
+      }
+    })
+  }
+
+  placeOrderPayOs() {
 
   }
 
