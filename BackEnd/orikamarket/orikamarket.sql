@@ -367,7 +367,7 @@ INSERT INTO `user_roles` VALUES (1,1),(1,2),(1,3);
 UNLOCK TABLES;
 
 --
--- Dumping routines for database 'ogani'
+-- Dumping routines for database 'orikamarket'
 --
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -379,4 +379,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-02-06 17:49:16
+
