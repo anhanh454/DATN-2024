@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.ogani.entity.Order;
+import com.example.ogani.model.classes.ItemData;
+import com.example.ogani.model.classes.PayOs;
+import com.example.ogani.model.classes.PaymentData;
 import com.example.ogani.model.request.CreateOrderRequest;
 import com.example.ogani.model.request.CreatePaymentLinkRequestBody;
 import com.example.ogani.model.response.MessageResponse;
@@ -26,7 +31,6 @@ import com.example.ogani.service.OrderService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.lib.payos.PayOS;
 
 import io.swagger.v3.oas.annotations.Operation;
 
@@ -38,7 +42,7 @@ public class OrderController {
     private OrderService orderService;
 
     @Autowired
-    private PayOS payOS;
+    private PayOs payOS;
 
     @GetMapping("/")
     @Operation(summary="Lấy ra danh sách đặt hàng")
@@ -73,6 +77,54 @@ public class OrderController {
             e.printStackTrace();
             // If an exception occurs, return ResponseEntity with HTTP status 500 Internal Server Error
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/create-payment-link")
+    public void checkout(@RequestBody CreatePaymentLinkRequestBody paymentLinkRequestBody,
+            HttpServletResponse httpServletResponse) {
+        try {
+            List<ItemData> productList = paymentLinkRequestBody.getProductList();
+            String description = paymentLinkRequestBody.getDescription();
+            String returnUrl = paymentLinkRequestBody.getReturnUrl();
+            String cancelUrl = paymentLinkRequestBody.getCancelUrl();
+            String buyerName = paymentLinkRequestBody.getLastname();
+            String buyerEmail = paymentLinkRequestBody.getEmail();
+            String buyerPhone = paymentLinkRequestBody.getPhone();
+            String buyerAddress = paymentLinkRequestBody.getAddress();
+            int totalPrice = 2000;
+            // Gen order code
+            String currentTimeString = String.valueOf(new Date().getTime());
+
+            int orderCode = Integer.parseInt(currentTimeString.substring(currentTimeString.length() - 6));
+
+            //  Tạo ra list sản phẩm
+            List<ItemData> itemList = new ArrayList<>();
+
+            //  Chạy vòng lặp để add item có được từ FE vào list sản phẩm
+            for (ItemData product : productList) {
+                ItemData item = new ItemData(product.getName(), product.getQuantity(), product.getPrice());
+                itemList.add(item);
+            }
+            
+            //  Tạo ra các thông tin thanh toán
+            PaymentData paymentData = new PaymentData(orderCode, totalPrice, description,
+                    itemList, cancelUrl, returnUrl);
+            paymentData.setBuyerName(buyerName);
+            paymentData.setBuyerAddress(buyerAddress);
+            paymentData.setBuyerEmail(buyerEmail);
+            paymentData.setBuyerPhone(buyerPhone);
+
+            //  Tạo json thanh toán để trả về phía FE
+            JsonNode data = payOS.createPaymentLink(paymentData);
+            System.out.println("data: " + data.toPrettyString());
+            //  Trong json đã có check out url, lấy ra để set cho header
+            String checkoutUrl = data.get("checkoutUrl").asText();
+
+            httpServletResponse.setHeader("Location", checkoutUrl);
+            httpServletResponse.setStatus(302);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

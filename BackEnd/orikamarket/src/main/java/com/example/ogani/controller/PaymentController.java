@@ -1,5 +1,6 @@
 package com.example.ogani.controller;
 
+import com.example.ogani.model.classes.PayOs;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -13,9 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/payment")
 public class PaymentController {
-  private final PayOS payOS;
+  private final PayOs payOS;
 
-  public PaymentController(PayOS payOS) {
+  public PaymentController(PayOs payOS) {
     super();
     this.payOS = payOS;
 

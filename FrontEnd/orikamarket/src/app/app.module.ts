@@ -48,6 +48,7 @@ import { MyOrderComponent } from './components/client/my-order/my-order.componen
 import { SearchComponent } from './components/client/search/search.component';
 import { LoginPageComponent } from './components/client/login-page/login-page.component';
 import { FooterComponent } from './components/client/footer/footer.component';
+import { BankingSuccessComponent } from './components/client/banking-success/bankingsuccess.component';
 
 @NgModule({
   declarations: [
@@ -72,6 +73,7 @@ import { FooterComponent } from './components/client/footer/footer.component';
     SearchComponent,
     LoginPageComponent,
     FooterComponent,
+    BankingSuccessComponent
 
   ],
   imports: [

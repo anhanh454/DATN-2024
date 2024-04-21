@@ -3,11 +3,12 @@ package com.example.ogani.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.lib.payos.PayOS;
+import com.example.ogani.model.classes.PayOs;
 
 @Configuration
-public class PayOsConfig {
+public class PayOsConfig implements WebMvcConfigurer{
     @Value("${PAYOS_CLIENT_ID}")
     private String clientId;
 
@@ -18,7 +19,7 @@ public class PayOsConfig {
     private String checksumKey;
 
     @Bean
-    public PayOS payOS() {
-        return new PayOS(clientId, apiKey, checksumKey);
+    public PayOs payOS() {
+        return new PayOs(clientId, apiKey, checksumKey);
     }
 }

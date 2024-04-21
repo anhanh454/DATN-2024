@@ -1,6 +1,8 @@
+import { HttpParams, HttpHeaders, HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { faBars, faHeart, faPhone, faShoppingBag } from '@fortawesome/free-solid-svg-icons';
 import { MessageService } from 'primeng/api';
+import { Observable } from 'rxjs';
 import { Order } from 'src/app/_class/order';
 import { OrderDetail } from 'src/app/_class/order-detail';
 
@@ -43,7 +45,7 @@ export class CheckoutComponent implements OnInit {
     note: null
   }
 
-  constructor(public cartService: CartService, private orderService: OrderService, private storageService: StorageService, private messageService: MessageService) {
+  constructor(private http: HttpClient, public cartService: CartService, private orderService: OrderService, private storageService: StorageService, private messageService: MessageService) {
 
   }
   ngOnInit(): void {
@@ -80,9 +82,36 @@ export class CheckoutComponent implements OnInit {
         this.placeOrderByCash();
         break;
       case 'banking':
-        this.placeOrderPayOs();
+        this.placeOrderVnPay();
         break;
     }
+  }
+
+  createPaymentLinkPayOs() {
+     // Lấy thông tin các sản phẩm từ giỏ hàng
+    const productList = this.cartService.items;
+
+    // return url là trang thông báo thanh toán thành công
+    const returnUrl = "http://localhost:4200/banking-success";
+
+    // cancel url là trang thông báo thanh toán bị hủy
+    const cancelUrl = "http://localhost:4200/banking-cancel";
+
+    // desc là trích dẫn
+    const description = "Thanh toan don hang";
+
+    const { firstname, lastname, country, address, town, state, postCcode, phone, email, note } = this.orderForm;
+
+    // Gọi phương thức createPaymentLinkInternetBanking từ PaymentService
+    this.orderService.createPaymentLinkInternetBanking(firstname, lastname, country, address, town, state, postCcode, phone, email, note, description, returnUrl, cancelUrl, productList).subscribe({
+      next: res => {
+        // Không làm gì cả
+      }, 
+      error: err => {
+        console.log(err);
+        this.showError("Có lỗi xảy ra!");
+      }
+    });
   }
 
   placeOrderByCash() {
@@ -109,9 +138,64 @@ export class CheckoutComponent implements OnInit {
     })
   }
 
-  placeOrderPayOs() {
+  placeOrderVnPay() {
+    // Kiểm tra xem có đủ thông tin để thanh toán không
+    if (!this.orderForm.firstname || !this.orderForm.lastname || !this.orderForm.country || !this.orderForm.address || !this.orderForm.town || !this.orderForm.state || !this.orderForm.postCode || !this.orderForm.phone || !this.orderForm.email) {
+      this.invalidForm = true;
+      this.showWarn("Vui lòng nhập đầy đủ thông tin giao hàng!");
+      return;
+    }
 
+    // Tạo một object chứa thông tin đơn hàng
+    const orderData = {
+      amount: this.cartService.getTotalPrice(), // Sử dụng hàm calculateTotal() từ service để tính tổng giá trị đơn hàng
+      orderInfo: 'Thanh toan don hang', // Thông tin đơn hàng có thể là một chuỗi tĩnh hoặc bạn có thể tạo một hàm để tạo ra thông tin đơn hàng động
+    
+    };
+    console.log(orderData.amount);
+
+    
+
+    // Gọi API để thực hiện thanh toán qua VnPay
+    this.http.post('http://localhost:8080/submit-order-vnpay', orderData).subscribe({
+      next: (response: any) => {
+        // Xử lý kết quả trả về từ API nếu cần
+        console.log(response);
+      },
+      error: (error: any) => {
+        // Xử lý lỗi nếu có
+        console.error(error);
+        this.showError("Có lỗi xảy ra khi thanh toán qua VnPay. Vui lòng thử lại sau.");
+      }
+    });
   }
+
+
+  placeOrderPayOs() {
+    this.cartService.items.forEach(res => {
+      let orderDetail: OrderDetail = new OrderDetail;
+      orderDetail.name = res.name;
+      orderDetail.price = res.price;
+      orderDetail.quantity = res.quantity;
+      orderDetail.subTotal = res.subTotal;
+      this.listOrderDetail.push(orderDetail);
+    })
+
+    const { firstname, lastname, country, address, town, state, postCcode, phone, email, note } = this.orderForm;
+
+    this.orderService.placeOrderInternetBanking(firstname, lastname, country, address, town, state, postCcode, phone, email, note, this.listOrderDetail, this.username).subscribe({
+      next: res => {
+        //  Clear giỏ hàng
+        this.cartService.clearCart();
+        this.showSuccess("Thanh toán thành công!");
+      }, error: err => {
+        console.log(err);
+        this.showError("Có lỗi xảy ra!");
+      }
+    })
+  }
+
+  
 
   showSuccess(text: string) {
     this.messageService.add({ severity: 'success', summary: 'Thành công', detail: text });
