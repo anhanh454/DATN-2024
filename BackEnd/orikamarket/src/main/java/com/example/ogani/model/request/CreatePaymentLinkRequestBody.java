@@ -7,9 +7,6 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-
-import com.example.ogani.model.classes.ItemData;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -63,7 +60,7 @@ public class CreatePaymentLinkRequestBody {
 
   private long totalPrice;
   
-  private List<ItemData> productList;
+  private List productList;
   private String description;
   private String returnUrl;
   private String cancelUrl;

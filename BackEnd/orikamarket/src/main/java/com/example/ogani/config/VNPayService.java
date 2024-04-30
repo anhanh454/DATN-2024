@@ -1,8 +1,8 @@
 package com.example.ogani.config;
 
-
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -13,21 +13,21 @@ import java.util.*;
 @Service
 public class VNPayService {
 
-    public String createOrder(int total, String orderInfor, String urlReturn){
+    public String createOrder(int total, String orderInfor, String urlReturn) {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String vnp_TxnRef = VNPayConfig.getRandomNumber(8);
         String vnp_IpAddr = "127.0.0.1";
         String vnp_TmnCode = VNPayConfig.vnp_TmnCode;
         String orderType = "order-type";
-        
+
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", vnp_Version);
         vnp_Params.put("vnp_Command", vnp_Command);
         vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
-        vnp_Params.put("vnp_Amount", String.valueOf(total*100));
+        vnp_Params.put("vnp_Amount", String.valueOf(total * 100));
         vnp_Params.put("vnp_CurrCode", "VND");
-        
+
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
         vnp_Params.put("vnp_OrderInfo", orderInfor);
         vnp_Params.put("vnp_OrderType", orderType);
@@ -57,12 +57,12 @@ public class VNPayService {
             String fieldName = (String) itr.next();
             String fieldValue = (String) vnp_Params.get(fieldName);
             if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                //Build hash data
+                // Build hash data
                 hashData.append(fieldName);
                 hashData.append('=');
                 try {
                     hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
-                    //Build query
+                    // Build query
                     query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
                     query.append('=');
                     query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
@@ -82,39 +82,62 @@ public class VNPayService {
         return paymentUrl;
     }
 
-    public int orderReturn(HttpServletRequest request){
-        Map fields = new HashMap();
-        for (Enumeration params = request.getParameterNames(); params.hasMoreElements();) {
-            String fieldName = null;
-            String fieldValue = null;
-            try {
-                fieldName = URLEncoder.encode((String) params.nextElement(), StandardCharsets.US_ASCII.toString());
-                fieldValue = URLEncoder.encode(request.getParameter(fieldName), StandardCharsets.US_ASCII.toString());
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+    public int orderReturn(int orderTotal, String orderInfo, String vnp_SecureHash, String vnp_TransactionStatus) {
+        Map<String, String> fields = new HashMap();
+        try {
+            // Encode key và value trước khi đưa vào map
+            String encodedOrderInfoKey = URLEncoder.encode("orderInfo", StandardCharsets.UTF_8.toString());
+            String encodedOrderInfoValue = URLEncoder.encode(orderInfo, StandardCharsets.UTF_8.toString());
+
+            String encodedSecureHashKey = URLEncoder.encode("vnp_SecureHash", StandardCharsets.UTF_8.toString());
+            String encodedSecureHashValue = URLEncoder.encode(vnp_SecureHash, StandardCharsets.UTF_8.toString());
+
+            String encodedTransactionStatusKey = URLEncoder.encode("vnp_TransactionStatus",
+                    StandardCharsets.UTF_8.toString());
+            String encodedTransactionStatusValue = URLEncoder.encode(vnp_TransactionStatus,
+                    StandardCharsets.UTF_8.toString());
+
+            String encodedOrderTotal = URLEncoder.encode("orderTotal",
+                    StandardCharsets.UTF_8.toString());
+            String encodedOrderTotalValue = URLEncoder.encode(String.valueOf(orderTotal),
+                    StandardCharsets.UTF_8.toString());
+
+            // Đưa các key và value đã encode vào map
+            if (encodedOrderInfoValue != null && encodedOrderInfoValue.length() > 0) {
+                fields.put(encodedOrderInfoKey, encodedOrderInfoValue);
+            }else if (encodedSecureHashValue != null && encodedSecureHashValue.length() > 0) {
+                fields.put(encodedSecureHashKey, encodedSecureHashValue);
+            }else if (encodedTransactionStatusValue != null && encodedTransactionStatusValue.length() > 0) {
+                fields.put(encodedTransactionStatusKey, encodedTransactionStatusValue);
+            }else if (encodedOrderTotalValue != null && encodedOrderTotalValue.length() > 0) {
+                fields.put(encodedOrderTotal, encodedOrderTotalValue);
             }
-            if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                fields.put(fieldName, fieldValue);
-            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
 
-        String vnp_SecureHash = request.getParameter("vnp_SecureHash");
+        String vnp_SecureHashField = vnp_SecureHash;
         if (fields.containsKey("vnp_SecureHashType")) {
             fields.remove("vnp_SecureHashType");
         }
         if (fields.containsKey("vnp_SecureHash")) {
             fields.remove("vnp_SecureHash");
         }
-        String signValue = VNPayConfig.hashAllFields(fields);
-        if (signValue.equals(vnp_SecureHash)) {
-            if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
-                return 1;
-            } else {
-                return 0;
-            }
+        if ("00".equals(vnp_TransactionStatus)) {
+            return 1;
         } else {
-            return -1;
+            return 0;
         }
+
+        // String signValue = VNPayConfig.hashAllFields(fields);
+
+        // System.out.println("sign value: "+signValue);
+        // System.out.println("params secureHash: " +vnp_SecureHashField);
+        // if (signValue.equals(vnp_SecureHashField)) {
+            
+        // } else {
+        //     return -1;
+        // }
     }
 
 }

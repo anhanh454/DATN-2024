@@ -8,6 +8,7 @@ import { OrderDetail } from 'src/app/_class/order-detail';
 
 import { CartService } from 'src/app/_service/cart.service';
 import { OrderService } from 'src/app/_service/order.service';
+import { SseService } from 'src/app/_service/sse.service';
 import { StorageService } from 'src/app/_service/storage.service';
 
 @Component({
@@ -17,6 +18,7 @@ import { StorageService } from 'src/app/_service/storage.service';
   providers: [MessageService]
 
 })
+
 export class CheckoutComponent implements OnInit {
   heart = faHeart;
   bag = faShoppingBag;
@@ -45,14 +47,23 @@ export class CheckoutComponent implements OnInit {
     note: null
   }
 
-  constructor(private http: HttpClient, public cartService: CartService, private orderService: OrderService, private storageService: StorageService, private messageService: MessageService) {
+  constructor(private sseService: SseService, private http: HttpClient, public cartService: CartService, private orderService: OrderService, private storageService: StorageService, private messageService: MessageService) {
 
   }
   ngOnInit(): void {
     this.selectedPaymentMethod = 'cash'; // Mặc định chọn tiền mặt
     this.username = this.storageService.getUser().username;
     this.cartService.getItems();
-    console.log(this.username);
+    this.sseService.listenForEvents().subscribe(
+      event => {
+        // Xử lý sự kiện từ server
+        console.log('Received event:', event);
+      },
+      error => {
+        // Xử lý lỗi
+        console.error('Error occurred:', error);
+      }
+    );
   }
 
   showDepartmentClick() {
@@ -149,7 +160,7 @@ export class CheckoutComponent implements OnInit {
     // Tạo một HttpParams object chứa thông tin đơn hàng
     let params = new HttpParams();
     params = params.set('amount', this.cartService.getTotalPrice());
-    params = params.set('orderInfo', 'Thanh toan don hang');
+    params = params.set('orderInfo', 'OD' + Date.now());
 
     // Gọi API để thực hiện thanh toán qua VnPay với HTTP params
     this.http.post('http://localhost:8080/api/vnpay/submit-order-vnpay', params, { responseType: 'text' }).subscribe({

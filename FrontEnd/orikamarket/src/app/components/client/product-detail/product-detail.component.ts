@@ -26,11 +26,11 @@ export class ProductDetailComponent implements OnInit {
   showDepartment = false;
 
   id: number = 0;
-  product : any;
-  listRelatedProduct: any[] =[];
-  quantity : number = 1;
+  product: any;
+  listRelatedProduct: any[] = [];
+  quantity: number = 1;
 
-  constructor(private productService: ProductService,private router: Router,private route: ActivatedRoute,public cartService: CartService,public wishlistService: WishlistService,private messageService: MessageService){
+  constructor(private productService: ProductService, private router: Router, private route: ActivatedRoute, public cartService: CartService, public wishlistService: WishlistService, private messageService: MessageService) {
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
 
   }
@@ -39,71 +39,72 @@ export class ProductDetailComponent implements OnInit {
     this.getProduct();
   }
 
-  showDepartmentClick(){
+  showDepartmentClick() {
     this.showDepartment = !this.showDepartment;
   }
 
 
-  getProduct(){
+  getProduct() {
     this.productService.getProdct(this.id).subscribe({
-      next: res =>{
+      next: res => {
         this.product = res;
         this.getListRelatedProduct();
-      },error: err=>{
+      }, error: err => {
         console.log(err);
       }
     })
   }
 
-  
 
-  getListRelatedProduct(){
+
+  getListRelatedProduct() {
     this.productService.getListRelatedProduct(this.product.category.id).subscribe({
-      next: res =>{
-        this.listRelatedProduct= res;
-      },error: err=>{
+      next: res => {
+        this.listRelatedProduct = res;
+      }, error: err => {
         console.log(err);
       }
     })
   }
 
-  addToCart(item: any){
+  addToCart(item: any) {
     this.cartService.getItems();
-    this.cartService.addToCart(item,1);
-    this.showSuccess("Add To Cart Successfully!")
+    this.cartService.addToCart(item, 1);
+    this.showSuccess("Đã thêm vào giỏ hàng!")
 
   }
 
-  addCart(item:any){
+  addCart(item: any) {
     this.cartService.getItems();
-    this.cartService.addToCart(item,this.quantity);
-    this.showSuccess("Add To Cart Successfully!");
+    this.cartService.addToCart(item, this.quantity);
+    this.showSuccess("Đã thêm vào giỏ hàng!")
   }
-  
-  addToWishList(item: any){
-    if(!this.wishlistService.productInWishList(item)){
+
+  addToWishList(item: any) {
+    if (!this.wishlistService.productInWishList(item)) {
       this.wishlistService.addToWishList(item);
-      this.showSuccess("Add To Wishlist Successfully!")
+      this.showSuccess("Đã thêm vào danh sách yêu thích!")
     }
   }
 
-  plusQuantity(){
+  plusQuantity() {
     this.quantity += 1;
   }
-  subtractQuantity(){
-    if(this.quantity > 1){
+  subtractQuantity() {
+    if (this.quantity > 1) {
       this.quantity -= 1;
     }
   }
 
   showSuccess(text: string) {
-    this.messageService.add({severity:'success', summary: 'Success', detail: text});
+    this.messageService.add({ severity: 'success', summary: 'Thành công', detail: text });
   }
+
   showError(text: string) {
-    this.messageService.add({severity:'error', summary: 'Error', detail: text});
+    this.messageService.add({ severity: 'error', summary: 'Thất bại', detail: text });
   }
-  
+
   showWarn(text: string) {
-    this.messageService.add({severity:'warn', summary: 'Warn', detail: text});
+    this.messageService.add({ severity: 'warn', summary: 'Cảnh báo', detail: text });
   }
 }

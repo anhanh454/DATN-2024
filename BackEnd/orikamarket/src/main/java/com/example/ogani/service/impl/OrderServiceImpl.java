@@ -12,7 +12,6 @@ import com.example.ogani.entity.Order;
 import com.example.ogani.entity.OrderDetail;
 import com.example.ogani.entity.User;
 import com.example.ogani.exception.NotFoundException;
-import com.example.ogani.model.classes.PayOs;
 import com.example.ogani.model.request.CreateOrderDetailRequest;
 import com.example.ogani.model.request.CreateOrderRequest;
 import com.example.ogani.model.request.CreatePaymentLinkRequestBody;
@@ -32,9 +31,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private PayOs payOS;
 
     @Override
     public void placeOrder(CreateOrderRequest request) {
