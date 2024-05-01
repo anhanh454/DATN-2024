@@ -68,7 +68,7 @@
                     <a href="javascript:void(0)" routerLink="/" class="cart-btn  text-white">Tiếp tục mua sắm <fa-icon [icon]="arrowRight"></fa-icon></a>
                 </div>
             </div>
-            <div class="col-lg-6">
+            <!-- <div class="col-lg-6">
                 <div class="shoping__continue">
                     <div class="shoping__discount">
                         <h5>Mã giảm giá</h5>
@@ -78,14 +78,14 @@
                         </form>
                     </div>
                 </div>
-            </div>
+            </div> -->
             <div class="col-lg-6">
                 <div class="shoping__checkout">
-                    <h5>Tổng</h5>
+                    <h5>Chi tiết đơn hàng</h5>
                     <ul>
-                        <li>Subtotal <span>{{cartService.totalPrice | currency: "VND"}}</span></li>
-                        <li>Sale <span>- 0%</span></li>
-                        <li>Total <span>{{cartService.total | currency: "VND"}}</span></li>
+                        <li>Tạm tính <span>{{cartService.totalPrice | currency: "VND"}}</span></li>
+                        <!-- <li>Sale <span>- 0%</span></li> -->
+                        <li>Thực tính <span>{{cartService.total | currency: "VND"}}</span></li>
                     </ul>
                     <a href="javascript:void(0)" routerLink="/checkout" class="primary-btn">Thanh toán ngay</a>
                 </div>
