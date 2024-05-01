@@ -49,6 +49,7 @@ import { SearchComponent } from './components/client/search/search.component';
 import { LoginPageComponent } from './components/client/login-page/login-page.component';
 import { FooterComponent } from './components/client/footer/footer.component';
 import { BankingSuccessComponent } from './components/client/banking-success/bankingsuccess.component';
+import { ContactComponent } from './components/client/contact/contact.component';
 
 @NgModule({
   declarations: [
@@ -73,8 +74,8 @@ import { BankingSuccessComponent } from './components/client/banking-success/ban
     SearchComponent,
     LoginPageComponent,
     FooterComponent,
-    BankingSuccessComponent
-
+    BankingSuccessComponent,
+    ContactComponent
   ],
   imports: [
     BrowserModule,

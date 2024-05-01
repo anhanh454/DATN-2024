@@ -1,8 +1,12 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { MessageService } from "primeng/api";
+import { OrderDetail } from "src/app/_class/order-detail";
 import { CartService } from "src/app/_service/cart.service";
+import { OrderService } from "src/app/_service/order.service";
+import { OrderDataService } from "src/app/_service/orderdata.service";
 import { SseService } from "src/app/_service/sse.service";
+import { StorageService } from "src/app/_service/storage.service";
 
 @Component({
   selector: 'app-bankingsuccess',
@@ -17,11 +21,13 @@ export class BankingSuccessComponent implements OnInit {
   paymentTime: string = '';
   transactionId: string = '';
   formattedPaymentTime: string = '';
+  listOrderDetail: any[] = [];
+  orderForm: any;
+  username !: string;
 
-  constructor(private route: ActivatedRoute, private cartService: CartService) { }
+  constructor(private storageService: StorageService, private orderService: OrderService, private route: ActivatedRoute, private cartService: CartService) { }
 
   ngOnInit(): void {
-    this.cartService.clearCart();
     this.route.queryParams.subscribe(params => {
       this.orderId = params['orderId'];
       // Nhân totalPrice với 0.01 trước khi gán vào biến
@@ -30,6 +36,27 @@ export class BankingSuccessComponent implements OnInit {
       this.transactionId = params['transactionId'];
       this.formatPaymentTime(); // Gọi hàm để format paymentTime
     });
+
+    this.username = this.storageService.getUser().username;
+
+    const listOrderDetailString = sessionStorage.getItem('listOrderDetail');
+    const orderFormString = sessionStorage.getItem('orderForm');
+
+    if (listOrderDetailString != null) {
+      this.listOrderDetail = JSON.parse(listOrderDetailString);
+    } else {
+      // Xử lý trường hợp không tìm thấy dữ liệu
+    }
+
+    if (orderFormString != null) {
+      this.orderForm = JSON.parse(orderFormString);
+    } else {
+      // Xử lý trường hợp không tìm thấy dữ liệu
+    }
+
+    console.log(this.listOrderDetail);
+    console.log(this.orderForm);
+    this.placeOrder();
   }
 
   // Phương thức để định dạng lại thời gian thanh toán
@@ -42,5 +69,16 @@ export class BankingSuccessComponent implements OnInit {
 
     // Định dạng lại thành 'DD-MM-YYYY'
     this.formattedPaymentTime = `${day}/${month}/${year}`;
+  }
+
+  placeOrder() {
+    this.orderService.placeOrderByCash(this.orderForm.firstname, this.orderForm.lastname, this.orderForm.country, this.orderForm.address, this.orderForm.town, this.orderForm.state, this.orderForm.postCcode, this.orderForm.phone, this.orderForm.email, this.orderForm.note, this.listOrderDetail, this.username).subscribe({
+      next: res => {
+        //  Clear giỏ hàng
+        this.cartService.clearCart();
+      }, error: err => {
+        console.log(err);
+      }
+    })
   }
 }

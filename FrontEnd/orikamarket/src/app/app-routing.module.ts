@@ -22,6 +22,7 @@ import { AuthGuardService } from './_service/auth-guard.service';
 import { RoleGuardService } from './_service/role-guard.service';
 import { BankingSuccessComponent } from './components/client/banking-success/bankingsuccess.component';
 import { BankingCancelComponent } from './components/client/banking-cancel/bankingcancel.component';
+import { ContactComponent } from './components/client/contact/contact.component';
 
 
 const routes: Routes = [
@@ -51,6 +52,8 @@ const routes: Routes = [
       {path:'search/:keyword',component:SearchComponent},
       {path:'banking-success',component:BankingSuccessComponent},
       {path:'banking-cancel',component:BankingCancelComponent},
+      {path:'contact',component:ContactComponent},
+      {path:'admin',component:DashboardComponent,canActivate: [RoleGuardService],data: {expectedRole: "ROLE_ADMIN"}},
     ]
   },
   {path:'login',component:LoginPageComponent}
