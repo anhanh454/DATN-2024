@@ -39,7 +39,7 @@ const routes: Routes = [
   {
     path:'',component: IndexComponent,
     children:[
-      {path:'',component:HomeComponent},
+      {path:'',component:HomeComponent,canActivate: [RoleGuardService],data: {expectedRole: "ROLE_USER"}},
       {path:'shop',component:ShopComponent},
       {path:'cart',component: CartComponent},
       {path:'checkout',component: CheckoutComponent,canActivate: [AuthGuardService]},
