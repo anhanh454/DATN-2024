@@ -231,13 +231,13 @@ ol {
 	font-size: 14px;
 	color: #1c1c1c;
 	display: inline-block;
-	margin-right: 36px;
+	margin-right: 16px;
 	position: relative;
 }
 
 .header__top__left ul li:after {
 	position: absolute;
-	right: -25px;
+	right: -8px;
 	top: 1px;
 	height: 20px;
 	width: 1px;
